@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-    
 import numpy as np
 import pandas as pd
-#import pygmo as pg
 from sklearn.model_selection import (GridSearchCV, KFold, cross_val_predict, 
                                      TimeSeriesSplit, cross_val_score, 
                                      LeaveOneOut, KFold, StratifiedKFold,
@@ -31,30 +30,16 @@ from sklearn.gaussian_process.kernels import (RBF, Matern, RationalQuadratic,
 
 
 import re
-#from sklearn.gaussian_process import GaussianProcess
-#from catboost import Pool, CatBoostRegressor
-#from pyearth import Earth as MARS
-#from sklearn.ensemble import StackingRegressor
-#from sklearn.experimental import enable_hist_gradient_boosting
-#from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.kernel_approximation import RBFSampler,SkewedChi2Sampler
-
 from util.ELM import  ELMRegressor, ELMRegressor
-#from util.MLP import MLPRegressor as MLPR
-#from util.RBFNN import RBFNNRegressor, RBFNN
-#from util.LSSVR import LSSVR
-#from gmdhpy.gmdh import MultilayerGMDH
 
 from scipy import stats
 from hydroeval import kge, nse
 
-#from mlxtend.regressor import StackingRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
 
-#%%----------------------------------------------------------------------------
-#pd.options.display.float_format = '{:20,.3f}'.format
 pd.options.display.float_format = '{:.3f}'.format
 
 import warnings
@@ -110,7 +95,7 @@ def MAPE(y_true, y_pred):
 import glob as gl
 import pylab as pl
 import os
-basename='iccsa2021_'
+basename='yudongnan_'
 #%%
 from read_data_zhao2016 import *
 datasets = [
@@ -120,7 +105,7 @@ datasets = [
 pl.show()
 
 pd.options.display.float_format = '{:.3f}'.format
-n_splits    = 10
+n_splits    = 3
 scoring     = 'neg_root_mean_squared_error'
 for run in range(run0, n_runs):
     random_seed=run*10
@@ -159,26 +144,11 @@ for run in range(run0, n_runs):
                     int(random_seed), scoring, target, 
                     n_samples_train, n_samples_test, n_features)
             #------------------------------------------------------------------         
-            params_gmdh = {
-                'ref_functions': ('linear_cov', 'quadratic', 'cubic', 'linear'),
-                #'criterion_type': 'test_bias',
-                'seq_type': 'random',
-                'feature_names': feature_names,
-                'min_best_neurons_count':5, 
-                'criterion_minimum_width': 5,
-                'admix_features': False,
-                'max_layer_count':20,
-                'stop_train_epsilon_condition': 0.000001,
-                'layer_err_criterion': 'top',
-                #'alpha': 0.5,
-                'normalize':False,
-                'n_jobs': 1
-                }   
-            
+
             lr = LinearRegression()
             svr_lin = SVR(kernel='linear')
 
-            cv=3
+            cv=n_splits
             ridgecv = GridSearchCV(estimator=Ridge(random_state=random_seed), 
                 param_grid={
                     'alpha':[0.  , 0.1 ,  0.3 ,  0.5, 1]+[2,5,10,50,100,500,100]
@@ -186,14 +156,6 @@ for run in range(run0, n_runs):
                 cv=cv, scoring='neg_root_mean_squared_error', n_jobs=6,
                 refit=True)
                                      
-            mlpcv = GridSearchCV(estimator=MLPRegressor(random_state=random_seed), 
-                param_grid={
-                    'hidden_layer_sizes':[(20),(30),(50), (100), (20,20), (50,50), (10,10,10)],
-                    'activation':['identity', 'logistic', 'tanh', 'relu'],
-                    },
-                cv=cv, scoring='neg_root_mean_squared_error', n_jobs=6,
-                refit=True)
-
             elmcv = GridSearchCV(ELMRegressor(alpha=1, random_state=random_seed), 
                 param_grid={
                     'n_hidden':[20,30,40,50,100,150,200,300,500],
