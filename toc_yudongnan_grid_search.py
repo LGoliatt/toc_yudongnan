@@ -106,7 +106,7 @@ pl.show()
 
 pd.options.display.float_format = '{:.3f}'.format
 n_splits    = 3
-scoring     = 'neg_root_mean_squared_error'
+scoring     = 'neg_root_mean_squared_error' 
 for run in range(run0, n_runs):
     random_seed=run*10
     
@@ -153,7 +153,7 @@ for run in range(run0, n_runs):
                 param_grid={
                     'alpha':[0.  , 0.1 ,  0.3 ,  0.5, 1]+[2,5,10,50,100,500,100]
                     }, 
-                cv=cv, scoring='neg_root_mean_squared_error', n_jobs=6,
+                cv=cv, scoring=scoring, n_jobs=6,
                 refit=True)
                                      
             elmcv = GridSearchCV(ELMRegressor(alpha=1, random_state=random_seed), 
@@ -162,7 +162,7 @@ for run in range(run0, n_runs):
                     'activation_func':['identity', 'logistic', 'tanh', 'relu',
                                   'swish', 'gaussian', 'multiquadric'],
                     },
-                cv=cv, scoring='neg_root_mean_squared_error', n_jobs=6,
+                cv=cv, scoring=scoring, n_jobs=6,
                 refit=True)
                        
             svr = GridSearchCV(SVR(max_iter=1000), 
@@ -170,7 +170,7 @@ for run in range(run0, n_runs):
                               'kernel':['rbf','poly','sigmoid','linear'],
                               'epsilon':[0.001,0.001,0.01,0.1, 0.5, 1, 10, 50, 100]
                               }  ,           
-                cv=cv, scoring='neg_root_mean_squared_error',
+                cv=cv, scoring=scoring,
                 refit=True)
             
             optimizers=[             
