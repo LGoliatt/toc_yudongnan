@@ -106,8 +106,8 @@ pl.show()
 
 pd.options.display.float_format = '{:.3f}'.format
 n_splits    = 3
-scoring     = 'r2' 
-#scoring     = 'neg_root_mean_squared_error' 
+#scoring     = 'r2' # uncomment to change the score function
+scoring     = 'neg_root_mean_squared_error' 
 for run in range(run0, n_runs):
     random_seed=run*10
     
